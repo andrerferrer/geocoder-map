@@ -82,7 +82,7 @@ In `app/views/restaurants/show.html.erb`:
 ```erb
 <div id="map"
      style="width: 100%; height: 25vh;"
-     data-marker="<%= @marker.to_json %>"
+     <%# this is setting the dataset as the mapbox api key from .env %>
      data-mapbox-api-key="<%= ENV['MAPBOX_API_KEY'] %>"></div>
 ```
 
@@ -103,9 +103,53 @@ In `app/controllers/restaurants_controller.rb`:
   end
 ```
 
+Now, let's add this marker data to the map `<div>` in `app/views/restaurants/show.html.erb`:
+```erb
+<div id="map"
+     style="width: 100%; height: 25vh;"
+     data-marker="<%= @marker.to_json %>" <%# add this line %>
+     data-mapbox-api-key="<%= ENV['MAPBOX_API_KEY'] %>"></div>
+```
+
+With this data in the view, we can use javascript to create the marker in the map:
+
+In `app/javascript/plugins/init_mapbox.js`:
+```js
+import mapboxgl from 'mapbox-gl';
+
+const addMarkerToMap = (map) => {
+  const mapElement = document.getElementById('map');
+
+  // Take the marker from the view in `app/views/restaurants/show.html.erb`
+  const marker = JSON.parse(mapElement.dataset.marker);
+
+  new mapboxgl.Marker()
+    .setLngLat([ marker.lng, marker.lat ])
+    .addTo(map);
+
+}
 
 
+const initMapbox = () => {
+  const mapElement = document.getElementById('map');
 
+  if (mapElement) {
+    mapboxgl.accessToken = mapElement.dataset.mapboxApiKey;
+    const map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/streets-v10'
+    });
+
+    addMarkerToMap(map) // Add this line to run the new function!
+  }
+};
+
+export { initMapbox };
+```
+
+Now we have a map and a marker, but it sucks 😅. Time to make the map zoom into the marker.
+
+### 5. Adjust the map to the marker
 
 
 
