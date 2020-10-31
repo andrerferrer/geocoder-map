@@ -6,6 +6,10 @@ class RestaurantsController < ApplicationController
   def show
     set_restaurant
     @review = Review.new
+    @marker = {
+      lat: @restaurant.latitude,
+      lng: @restaurant.longitude
+    }
   end
 
   def new
