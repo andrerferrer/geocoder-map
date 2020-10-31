@@ -89,7 +89,7 @@ In `app/views/restaurants/show.html.erb`:
 Now, we have a map. Not looking good, but it's a map! Time to add a marker (to show our restaurant).
 
 
-### 4. Add a marker to show in your map
+### 5. Add a marker to show in your map
 In `app/controllers/restaurants_controller.rb`:
 
 ```ruby
@@ -149,7 +149,7 @@ export { initMapbox };
 
 Now we have a map and a marker, but it sucks 😅. Time to make the map zoom into the marker.
 
-### 5. Adjust the map to the marker
+### 6. Adjust the map to the marker
 
 To make it zoom, we need to use `mapbox-gl` once again.
 
