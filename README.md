@@ -151,6 +151,20 @@ Now we have a map and a marker, but it sucks 😅. Time to make the map zoom int
 
 ### 5. Adjust the map to the marker
 
+To make it zoom, we need to use `mapbox-gl` once again.
+
+In `app/javascript/plugins/init_mapbox.js` we will add this function and call it:
+```js
+const zoomMapToMarker = (map, marker) => {
+  const bounds = new mapboxgl.LngLatBounds();
+  bounds.extend([ marker.lng, marker.lat ])
+  map.fitBounds(bounds, { padding: 70, maxZoom: 15, duration: 0 });
+};
+```
+
+Check the end result in `app/javascript/plugins/init_mapbox.js`.
+
+
 
 
 And we're good to go 🤓
