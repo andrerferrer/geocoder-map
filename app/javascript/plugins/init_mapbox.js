@@ -1,5 +1,12 @@
 import mapboxgl from 'mapbox-gl';
 
+// add this function
+const zoomMapToMarker = (map, marker) => {
+  const bounds = new mapboxgl.LngLatBounds();
+  bounds.extend([ marker.lng, marker.lat ])
+  map.fitBounds(bounds, { padding: 70, maxZoom: 15, duration: 0 });
+};
+
 const addMarkerToMap = (map) => {
   const mapElement = document.getElementById('map');
 
@@ -9,7 +16,8 @@ const addMarkerToMap = (map) => {
   new mapboxgl.Marker()
     .setLngLat([ marker.lng, marker.lat ])
     .addTo(map);
-
+  
+  zoomMapToMarker(map, marker) // add this line
 }
 
 
