@@ -25,19 +25,54 @@ MAPBOX_API_KEY=pk.eyJ1IjoiZXBlbXMiLCJhIjoiY2tmZ3F0MjN3MHJnNTMzbG0zOGRkYThidCJ9.J
 
 > If you don't, just add it and run `bundle install`
 
-### 3. Add a marker to show in your map
-In `app/controllers/restaurants_controller.rb`:
+### 3. Add [`mapbox-gl`](https://www.npmjs.com/package/mapbox-gl) to your app
 
-```ruby
-  def show
-    set_restaurant
-    @review = Review.new
-    @marker = {
-      lat: @restaurant.latitude,
-      lng: @restaurant.longitude
-    }
-  end
+In the terminal: `yarn add mapbox-gl`.
+
+We'll create the plugins folder (if it's not there yet - `mkdir app/javascript/plugin`), and we'll create the `init_mapbox.js` file.
+
+In `app/javascript/plugin/init_mapbox.js`:
+```js
+import mapboxgl from 'mapbox-gl';
+
+const initMapbox = () => {
+  const mapElement = document.getElementById('map');
+
+  // This if here is to ensure that we will only run the code
+  // IF we find this map element (which will be only in the Restaurants#Show)
+  if (mapElement) {
+    // This is setting the access token as the one coming from app/views/restaurants/show.html.erb (line 11)
+    mapboxgl.accessToken = mapElement.dataset.mapboxApiKey;
+    
+    const map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/streets-v10'
+    });
+  }
+};
+
+export { initMapbox };
 ```
+
+AAAaand, if we are exporting, the `app/javascript/packs/application.js` must be importing. Let's fix that:
+```js
+// Internal imports (code you wrote):
+import { initMapbox } from '../plugins/init_mapbox';
+
+document.addEventListener('turbolinks:load', () => {
+  // Call your functions here after turbolinks is done loading
+  initMapbox();
+});
+```
+
+Finally, we have to apply the CSS that is coming from MapBox.
+
+In `app/assets/stylesheets/application.scss`:
+```css
+@import 'mapbox-gl/dist/mapbox-gl';
+```
+
+Now, we can have a map. Let's add it to the view.
 
 ### 4. Add a map to your app
 
@@ -51,10 +86,22 @@ In `app/views/restaurants/show.html.erb`:
      data-mapbox-api-key="<%= ENV['MAPBOX_API_KEY'] %>"></div>
 ```
 
-### 5. Add [`mapbox-gl`](https://www.npmjs.com/package/mapbox-gl) to your app
+Now, we have a map. Not looking good, but it's a map! Time to add a marker (to show our restaurant).
 
-In the terminal: `yarn add mapbox-gl`.
 
+### 4. Add a marker to show in your map
+In `app/controllers/restaurants_controller.rb`:
+
+```ruby
+  def show
+    set_restaurant
+    @review = Review.new
+    @marker = {
+      lat: @restaurant.latitude,
+      lng: @restaurant.longitude
+    }
+  end
+```
 
 
 
